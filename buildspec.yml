@@ -1,0 +1,34 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 20
+    commands:
+      - echo Installing dependencies...
+  pre_build:
+    commands:
+      - echo Selecting a random Docker image...
+      - |
+        # Define an array of Docker images
+        images=("hello-world" "alpine" "busybox" "nginx" "httpd")
+        # Pick a random index
+        RANDOM_INDEX=$((RANDOM % ${#images[@]}))
+        # Select image
+        SELECTED_IMAGE=${images[$RANDOM_INDEX]}
+        echo "Selected image: $SELECTED_IMAGE"
+  build:
+    commands:
+      - echo Pulling and running $SELECTED_IMAGE...
+      - docker pull $SELECTED_IMAGE
+      - |
+        echo "Running container..."
+        if docker run --rm $SELECTED_IMAGE; then
+          echo "✅ Successfully ran $SELECTED_IMAGE container!"
+        else
+          echo "❌ Failed to run $SELECTED_IMAGE container."
+          exit 1
+        fi
+artifacts:
+  files:
+    - '**/*'
